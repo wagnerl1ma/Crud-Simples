@@ -1,0 +1,115 @@
+*********** Passo a Passo Para Criar um Crud Asp.Net Core ********************
+
+Referencias Necessárias:
+
+Microsoft.EntityFrameworkCore (3.1.13)
+Microsoft.EntityFrameworkCore.Design (3.1.13)
+Microsoft.EntityFrameworkCore.SqlServer (3.1.13)
+Microsoft.EntityFrameworkCore.Tools (3.1.13)
+Microsoft.VisualStudio.Web.CodeGeneration.Design (3.1.15)
+
+##########################################################################################################################################
+
+1 - Criar um Projeto Web Asp.Net Core(Model-View-Controller)
+
+#####################################################################
+
+2 - Criar a Model para o Contexto
+ Exemplo: Cliente
+ 
+- Definir as propriedades, Ex:
+
+	    [Key]
+        public int ClienteId { get; set; }
+        public string Nome { get; set; }
+        public int Idade { get; set; }
+
+Obs: Usando DataAnnotations para especificar que e ClienteId é a chave, sendo assim não é necessário criar OnModelCreating no contexto
+
+#####################################################################
+
+3 - Criar o Contexto
+Exemplo: NomedoProjetoContext
+
+- Na estrutura do projeto, Criar uma pasta Data e criar o contexto dentro da pasta
+- Criar o Contexto e definir a Heraranca de DbContext
+- instalar o Microsoft.EntityFrameworkCore. Se atentar com a versão, todos pacotes devem utilizar a mesma versão - (Atual 3.1.13) 20/03/2021
+- Criar o DbContextOptions:
+Ex:
+public TesteCrudContexto(DbContextOptions<TesteCrudContexto> options)
+            : base(options)
+        {
+        }
+		
+- Criar o DbSet Cliente
+Ex: public DbSet<Cliente> Clientes { get; set; }
+
+#####################################################################
+
+4 - Criar Banco de Dados Local
+
+- Clicar com o botão direito em Conexoes de Dados e escolher a opção "Adicionar Conexao" - Ex: O nome da Conexao pode ser o mesmo nome do Projeto
+
+###################################################################################################################################################
+
+5 - Criar Tabela
+
+Abrir um nova consulta e criar uma tabela, sintaxe SQL... 
+Ex: 
+
+CREATE TABLE [dbo].[Clientes]
+(
+	[ClienteId] INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+	[Nome] VARCHAR(250) NULL,
+	[Idade] INT NULL
+)
+
+O Nome da Tabela deve ser igual o DbSet que foi definido no contexto, ex : DbSet<Cliente> Clientes
+
+Observação: Os nomes das colunas e tipo devem ser exatamente iguais a Classe de Cliente
+
+#####################################################################################################################################################
+
+6 - Configurar String de Conexao na Startup
+
+- Adicionar o metodo de configuração da string de conexão na ConfigureServices.
+Exemplo: 
+
+            //Configurar Connection String sem a chamada da Migration
+            services.AddDbContext<CrudSimplesContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+
+            //Configurar Connection String com a chamada da Migration
+            //     services.AddDbContext<CrudSimplesContext>(options =>
+            //options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"), builder => builder.MigrationsAssembly("DefaultConnection")));
+
+
+- Configurar string de conexão "appsettings.json"
+
+Exemplo: 
+
+"ConnectionStrings": {
+    "DefaultConnection": "Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=C:\\Users\\Wagner\\Documents\\CrudSimples.mdf;Integrated Security=True;Connect Timeout=30"
+  }
+  
+Observação: para capturar a string de conexão do banco local, clicar com o botão direito em cima do banco de dados e ir em propriedades e copiar a conexão que está dentro de Cadeia de Conexão.
+  
+#####################################################################################################################################################
+  
+7 - Criar a Controller com as configurações de Crud  
+
+- Criar com a opção: Controlador MVC com exibições, Usando EntityFramework
+- Selecionar a classe modelo e abaixo o contexto
+
+#####################################################################################################################################################
+
+8 - Na Classe _Layout.cshtml adicione o link da controller que você criou para exibição na Tela Inicial
+Exemplo:
+        <li class="nav-item">
+            <a class="nav-link text-dark" asp-area="" asp-controller="Clientes" asp-action="Index">Clientes</a>
+        </li>
+		
+		
+#####################################################################################################################################################
+                                                        PRONTO - Seu CRUD foi CRIADO :)		
+														
+														
